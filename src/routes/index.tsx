@@ -1,181 +1,138 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Rocket, Globe, Wrench, Check, X, AlertTriangle, Users } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { GameCard } from "@/components/GameCard";
-import { PixelButton } from "@/components/PixelButton";
-import { games } from "@/data/games";
-import heroImg from "@/assets/hero-pixel.jpg";
+import { Launcher } from "@/components/Launcher";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PixelArcade — Free Browser Games for School" },
-      {
-        name: "description",
-        content:
-          "Play Eaglercraft, Moto X3M, Paper.io 2 and 3, and more retro pixel-art browser games — free, unblocked, and fun.",
-      },
-      { property: "og:title", content: "PixelArcade — Free Browser Games" },
-      {
-        property: "og:description",
-        content: "Eaglercraft, Moto X3M, Paper.io and more — straight in your browser.",
-      },
+      { title: "eaglerlaunch — Play Eaglercraft in your browser" },
+      { name: "description", content: "Clean, ad-free Eaglercraft launcher. Pick a version and play instantly — no downloads, no clutter." },
+      { property: "og:title", content: "eaglerlaunch — Eaglercraft Launcher" },
+      { property: "og:description", content: "Clean, ad-free Eaglercraft launcher. Multiple versions, instant play." },
     ],
   }),
   component: HomePage,
 });
-
-const categories = ["All", "Sandbox", "Racing", "IO Arena"];
 
 function HomePage() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
 
-      {/* HERO */}
-      <section className="relative overflow-hidden border-b-4 border-foreground">
-        <div className="mx-auto max-w-7xl px-6 py-16 grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 border-2 border-foreground bg-card px-3 py-1.5">
-              <span className="size-2 bg-neon-pink animate-blink"></span>
-              <span className="font-pixel text-[10px] uppercase">Now Playing — 47 games</span>
-            </div>
-            <h1 className="font-pixel text-4xl md:text-6xl uppercase leading-[1.1]">
-              <span className="text-neon-pink">Press</span>
-              <br />
-              <span className="text-foreground">Start</span>
-              <br />
-              <span className="text-neon-cyan">2 Play</span>
-            </h1>
-            <p className="text-2xl text-muted-foreground max-w-md leading-snug">
-              Your retro arcade for school break. Eaglercraft, Moto X3M, Paper.io and more — boot up and go.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <PixelButton variant="primary" onClick={() => document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" })}>
-                ▶ Insert Coin
-              </PixelButton>
-              <PixelButton variant="ghost" onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}>
-                ? About
-              </PixelButton>
-            </div>
-            <div className="flex gap-6 pt-4">
-              <Stat label="Games" value="47" color="text-neon-pink" />
-              <Stat label="Players" value="56K" color="text-neon-cyan" />
-              <Stat label="Coins" value="∞" color="text-neon-yellow" />
-            </div>
-          </div>
+      {/* HERO + LAUNCHER */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 starfield opacity-60 pointer-events-none" aria-hidden />
+        <div className="mx-auto max-w-5xl px-6 pt-16 pb-20">
+          <Launcher />
 
-          <div className="relative">
-            <div className="absolute -inset-2 bg-neon-pink translate-x-2 translate-y-2"></div>
-            <div className="relative pixel-border bg-card overflow-hidden">
-              <img
-                src={heroImg}
-                alt="Pixel arcade hero"
-                width={1536}
-                height={768}
-                className="w-full aspect-[3/2] object-cover"
-              />
-              <div className="absolute inset-0 crt-overlay pointer-events-none" />
-              <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between border-t-4 border-foreground bg-background/90 px-4 py-2">
-                <span className="font-pixel text-[10px] uppercase text-neon-yellow animate-blink">● REC</span>
-                <span className="font-pixel text-[10px] uppercase">High Score: 999,999</span>
-              </div>
-            </div>
-            <div className="absolute -top-4 -right-4 border-4 border-foreground bg-neon-yellow px-3 py-2 rotate-6 animate-float">
-              <span className="font-pixel text-[10px] uppercase text-primary-foreground">1UP!</span>
-            </div>
+          {/* Feature row */}
+          <div className="grid md:grid-cols-3 gap-6 mt-16">
+            <Feature icon={<Rocket className="size-6" />} title="Play Instantly" body="No downloads needed. Play in your browser." />
+            <Feature icon={<Globe className="size-6" />} title="Multiplayer" body="Join friends and play together online." />
+            <Feature icon={<Wrench className="size-6" />} title="Multiple Versions" body="Choose your favorite Minecraft version." />
           </div>
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section id="catalog" className="border-b-4 border-foreground bg-card">
-        <div className="mx-auto max-w-7xl px-6 py-6 flex flex-wrap items-center gap-3">
-          <span className="font-pixel text-xs uppercase text-muted-foreground mr-2">Filter:</span>
-          {categories.map((c, i) => (
-            <button
-              key={c}
-              className={`pixel-border font-pixel text-[10px] uppercase px-3 py-2 transition-transform hover:-translate-y-0.5 ${
-                i === 0 ? "bg-neon-pink text-primary-foreground" : "bg-background"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* GAMES GRID */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <p className="font-pixel text-[10px] uppercase text-neon-cyan mb-2">// Catalog</p>
-            <h2 className="font-pixel text-2xl md:text-3xl uppercase">
-              Pick Your <span className="text-neon-pink">Quest</span>
-            </h2>
-          </div>
-          <span className="hidden sm:block font-pixel text-[10px] uppercase text-muted-foreground">
-            {games.length} games loaded
-          </span>
+      {/* WHY CHOOSE US */}
+      <section id="about" className="mx-auto max-w-5xl px-6 py-20">
+        <div className="text-center mb-12">
+          <span className="text-xs font-semibold text-primary uppercase tracking-wider">★ Why Choose Us?</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-3">Most launchers have problems.</h2>
+          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            Walls of text, ads everywhere, clutter, outdated designs. We decided to do something different.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {games.map((g) => (
-            <GameCard key={g.slug} game={g} />
-          ))}
-        </div>
-      </section>
-
-      {/* ABOUT */}
-      <section id="about" className="border-t-4 border-foreground bg-card">
-        <div className="mx-auto max-w-7xl px-6 py-16 grid md:grid-cols-3 gap-8">
-          <Feature
-            color="bg-neon-pink"
-            title="No Installs"
-            body="Every game runs in your browser. Click it, play it. No downloads, no fuss."
+        <div className="grid md:grid-cols-2 gap-6">
+          <Problem
+            icon={<X className="size-5" />}
+            tone="negative"
+            title="Not User-Focused"
+            body="Most sites plaster ads everywhere, force video ads, and bury you in pop-ups and walls of SEO text."
           />
-          <Feature
-            color="bg-neon-cyan"
-            title="Unblocked Vibes"
-            body="Curated for study hall energy. Bookmark, refresh, play through the bell."
+          <Problem
+            icon={<AlertTriangle className="size-5" />}
+            tone="warn"
+            title="Limited Client Options"
+            body="Most sites assume you only want one or two versions. PvP clients, QoL mods, betas — usually missing."
           />
-          <Feature
-            color="bg-neon-yellow"
-            title="Pixel Forever"
-            body="Built with love for chunky pixels, CRT scanlines, and the golden age of arcades."
+          <Problem
+            icon={<Check className="size-5" />}
+            tone="positive"
+            title="User-Focused"
+            body="100% ad-free with zero hassle. Play instantly, anywhere. Designed for what's best for you."
+          />
+          <Problem
+            icon={<Users className="size-5" />}
+            tone="positive"
+            title="Community-Focused"
+            body="We listen to suggestions and add what players actually want. Your favorite client missing? Tell us."
           />
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t-4 border-foreground bg-background py-8">
-        <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="font-pixel text-[10px] uppercase text-muted-foreground">
-            © 2026 PixelArcade — Made with ▣▣▣
-          </span>
-          <span className="font-pixel text-[10px] uppercase text-muted-foreground animate-blink">
-            ▮ Press F to pay respects
-          </span>
+      <footer id="legal" className="border-t border-border/60 bg-card/40 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-6 py-10 grid md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="size-8 rounded-lg bg-gradient-to-br from-sky-deep to-primary flex items-center justify-center text-primary-foreground font-bold">◆</div>
+              <span className="font-bold">eaglerlaunch</span>
+            </div>
+            <p className="text-sm text-muted-foreground">Clean, ad-free Eaglercraft launcher.</p>
+          </div>
+          <FooterCol title="Launcher" links={["All Clients", "Vanilla", "PvP", "Classic"]} />
+          <FooterCol title="Resources" links={["Server List", "Discord", "Help", "FAQ"]} />
+          <FooterCol title="Legal" links={["Disclaimer", "Privacy", "Terms", "DMCA"]} />
+        </div>
+        <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
+          © 2026 eaglerlaunch · Not affiliated with Mojang or Microsoft.
         </div>
       </footer>
     </div>
   );
 }
 
-function Stat({ label, value, color }: { label: string; value: string; color: string }) {
+function Feature({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
   return (
-    <div>
-      <div className={`font-pixel text-2xl ${color}`}>{value}</div>
-      <div className="font-pixel text-[9px] uppercase text-muted-foreground mt-1">{label}</div>
+    <div className="text-center px-4">
+      <div className="size-14 mx-auto rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 animate-float-soft">
+        {icon}
+      </div>
+      <h3 className="font-bold text-lg">{title}</h3>
+      <p className="text-sm text-muted-foreground mt-1">{body}</p>
     </div>
   );
 }
 
-function Feature({ color, title, body }: { color: string; title: string; body: string }) {
+function Problem({ icon, title, body, tone }: { icon: React.ReactNode; title: string; body: string; tone: "negative" | "warn" | "positive" }) {
+  const toneClasses = {
+    negative: "bg-destructive/10 text-destructive",
+    warn: "bg-sun/20 text-foreground",
+    positive: "bg-primary/10 text-primary",
+  }[tone];
   return (
-    <div className="pixel-border bg-background p-6 shadow-[6px_6px_0_0_var(--color-foreground)]">
-      <div className={`size-10 ${color} mb-4 border-2 border-foreground`}></div>
-      <h3 className="font-pixel text-sm uppercase mb-3">{title}</h3>
-      <p className="text-lg text-muted-foreground leading-snug">{body}</p>
+    <div className="soft-card p-6">
+      <div className="flex items-center gap-3 mb-2">
+        <div className={`size-9 rounded-lg flex items-center justify-center ${toneClasses}`}>{icon}</div>
+        <h3 className="font-bold">{title}</h3>
+      </div>
+      <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
+    </div>
+  );
+}
+
+function FooterCol({ title, links }: { title: string; links: string[] }) {
+  return (
+    <div>
+      <h4 className="font-semibold text-sm mb-3">{title}</h4>
+      <ul className="space-y-2 text-sm text-muted-foreground">
+        {links.map((l) => (
+          <li key={l}><a href="#" className="hover:text-foreground transition-colors">{l}</a></li>
+        ))}
+      </ul>
     </div>
   );
 }
