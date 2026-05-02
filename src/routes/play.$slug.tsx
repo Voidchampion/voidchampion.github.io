@@ -1,169 +1,122 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { PixelButton } from "@/components/PixelButton";
-import { games, getGame } from "@/data/games";
+import { clients, getClient } from "@/data/games";
 
 export const Route = createFileRoute("/play/$slug")({
   loader: ({ params }) => {
-    const game = getGame(params.slug);
+    const game = getClient(params.slug);
     if (!game) throw notFound();
     return { game };
   },
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.game.title} — Play on PixelArcade` },
+          { title: `${loaderData.game.title} ${loaderData.game.version} — Launch` },
           { name: "description", content: loaderData.game.description },
-          { property: "og:title", content: `${loaderData.game.title} — PixelArcade` },
+          { property: "og:title", content: `${loaderData.game.title} ${loaderData.game.version}` },
           { property: "og:description", content: loaderData.game.description },
-          { property: "og:image", content: loaderData.game.image },
         ]
-      : [{ title: "Play — PixelArcade" }],
+      : [{ title: "Launch — eaglerlaunch" }],
   }),
   notFoundComponent: () => (
     <div className="min-h-screen">
       <SiteHeader />
       <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-        <h1 className="font-pixel text-4xl uppercase text-neon-pink mb-4">404</h1>
-        <p className="font-pixel text-sm uppercase mb-8">Game Not Found</p>
-        <Link to="/">
-          <PixelButton>← Back to Arcade</PixelButton>
-        </Link>
+        <h1 className="text-6xl font-bold text-primary mb-4">404</h1>
+        <p className="text-lg text-muted-foreground mb-8">Client not found</p>
+        <Link to="/" className="sky-button inline-block px-6 py-3">← Back home</Link>
       </div>
     </div>
   ),
-  errorComponent: ({ error, reset }) => (
-    <div className="min-h-screen">
-      <SiteHeader />
-      <div className="mx-auto max-w-2xl px-6 py-24 text-center">
-        <h1 className="font-pixel text-2xl uppercase text-destructive mb-4">Game Crashed</h1>
-        <p className="text-lg text-muted-foreground mb-8">{error.message}</p>
-        <PixelButton onClick={reset}>↻ Retry</PixelButton>
+  errorComponent: ({ error, reset }) => {
+    const router = useRouter();
+    return (
+      <div className="min-h-screen">
+        <SiteHeader />
+        <div className="mx-auto max-w-2xl px-6 py-24 text-center">
+          <h1 className="text-2xl font-bold text-destructive mb-4">Something broke</h1>
+          <p className="text-muted-foreground mb-8">{error.message}</p>
+          <button onClick={() => { router.invalidate(); reset(); }} className="sky-button px-6 py-3">Retry</button>
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
   component: PlayPage,
 });
 
 function PlayPage() {
   const { game } = Route.useLoaderData();
-  const related = games.filter((g) => g.slug !== game.slug).slice(0, 3);
+  const related = clients.filter((c) => c.slug !== game.slug).slice(0, 3);
 
   return (
     <div className="min-h-screen">
       <SiteHeader />
 
       <section className="mx-auto max-w-7xl px-6 py-10">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
+          <ArrowLeft className="size-4" /> Back to launcher
+        </Link>
+
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
           <div>
-            <Link
-              to="/"
-              className="font-pixel text-[10px] uppercase text-muted-foreground hover:text-neon-pink"
-            >
-              ← Back to Arcade
-            </Link>
-            <h1 className="font-pixel text-2xl md:text-4xl uppercase mt-2">
-              {game.title}
+            <span className="text-xs font-semibold text-primary uppercase tracking-wider">{game.category}</span>
+            <h1 className="text-3xl md:text-5xl font-bold mt-2">
+              {game.title} <span className="text-muted-foreground font-medium">{game.version}</span>
             </h1>
-            <p className="font-pixel text-[10px] uppercase text-neon-cyan mt-2">
-              {game.category} · {game.tagline}
-            </p>
+            <p className="text-muted-foreground mt-2">{game.tagline}</p>
           </div>
-          <div className="flex gap-3">
-            <div className="border-2 border-foreground bg-card px-3 py-2 font-pixel text-[10px] uppercase">
-              ★ {game.rating}
-            </div>
-            <div className="border-2 border-foreground bg-card px-3 py-2 font-pixel text-[10px] uppercase text-neon-yellow">
-              {game.players} online
-            </div>
-          </div>
+          {game.badge && (
+            <span className="text-sm font-medium bg-primary/10 text-primary px-4 py-2 rounded-full">
+              {game.badge}
+            </span>
+          )}
         </div>
 
         {/* Game frame */}
-        <div className="relative">
-          <div className="absolute -inset-2 bg-neon-cyan translate-x-2 translate-y-2"></div>
-          <div className="relative pixel-border bg-black overflow-hidden">
-            <div className="flex items-center justify-between border-b-4 border-foreground bg-card px-4 py-2">
-              <div className="flex gap-2">
-                <span className="size-3 bg-neon-pink"></span>
-                <span className="size-3 bg-neon-yellow"></span>
-                <span className="size-3 bg-neon-green"></span>
+        <div className="soft-card overflow-hidden">
+          <div className="aspect-video bg-gradient-to-br from-sky-soft to-accent flex items-center justify-center starfield relative">
+            <div className="text-center space-y-4 max-w-md px-6">
+              <div className="size-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Loader2 className="size-7 text-primary animate-spin" />
               </div>
-              <span className="font-pixel text-[10px] uppercase text-muted-foreground">
-                {game.slug}.exe
-              </span>
-              <span className="font-pixel text-[10px] uppercase text-neon-green animate-blink">
-                ● LIVE
-              </span>
-            </div>
-
-            <div className="relative aspect-video bg-background flex items-center justify-center crt-overlay">
-              <img
-                src={game.image}
-                alt={game.title}
-                className="absolute inset-0 w-full h-full object-cover opacity-30"
-              />
-              <div className="relative z-10 text-center space-y-6 p-6">
-                <div className="font-pixel text-xs uppercase text-neon-yellow animate-blink">
-                  ▮ Loading game files...
-                </div>
-                <div className="font-pixel text-2xl md:text-4xl uppercase">
-                  {game.title}
-                </div>
-                <p className="font-pixel text-[10px] uppercase text-muted-foreground max-w-md mx-auto leading-relaxed">
-                  Game embed pending. Drop in your iframe URL or game files to launch.
-                </p>
-                <div className="pt-2">
-                  <PixelButton variant="primary">▶ Press Start</PixelButton>
-                </div>
-              </div>
+              <h2 className="text-2xl font-bold">Booting {game.title} {game.version}</h2>
+              <p className="text-sm text-muted-foreground">
+                Game embed pending. Drop in your iframe URL or game files to launch.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Description */}
-        <div className="grid md:grid-cols-3 gap-6 mt-12">
-          <div className="md:col-span-2 pixel-border bg-card p-6 shadow-[6px_6px_0_0_var(--color-foreground)]">
-            <h2 className="font-pixel text-sm uppercase mb-4 text-neon-pink">
-              // About this game
-            </h2>
-            <p className="text-xl text-muted-foreground leading-relaxed">
-              {game.description}
-            </p>
+        <div className="grid md:grid-cols-3 gap-6 mt-10">
+          <div className="md:col-span-2 soft-card p-6">
+            <h3 className="font-bold text-lg mb-3">About this version</h3>
+            <p className="text-muted-foreground leading-relaxed">{game.description}</p>
           </div>
-          <div className="pixel-border bg-card p-6 shadow-[6px_6px_0_0_var(--color-foreground)] space-y-4">
-            <h3 className="font-pixel text-sm uppercase text-neon-cyan">// Controls</h3>
-            <ul className="space-y-2 font-pixel text-[10px] uppercase">
-              <li className="flex justify-between"><span>Move</span><span className="text-neon-yellow">WASD</span></li>
-              <li className="flex justify-between"><span>Jump</span><span className="text-neon-yellow">SPACE</span></li>
-              <li className="flex justify-between"><span>Action</span><span className="text-neon-yellow">CLICK</span></li>
-              <li className="flex justify-between"><span>Pause</span><span className="text-neon-yellow">ESC</span></li>
+          <div className="soft-card p-6">
+            <h3 className="font-bold text-lg mb-3">Default Controls</h3>
+            <ul className="space-y-2 text-sm">
+              <li className="flex justify-between"><span className="text-muted-foreground">Move</span><span className="font-mono font-semibold">WASD</span></li>
+              <li className="flex justify-between"><span className="text-muted-foreground">Jump</span><span className="font-mono font-semibold">SPACE</span></li>
+              <li className="flex justify-between"><span className="text-muted-foreground">Inventory</span><span className="font-mono font-semibold">E</span></li>
+              <li className="flex justify-between"><span className="text-muted-foreground">Pause</span><span className="font-mono font-semibold">ESC</span></li>
             </ul>
           </div>
         </div>
 
-        {/* Related */}
         <div className="mt-16">
-          <h2 className="font-pixel text-xl uppercase mb-6">
-            More <span className="text-neon-pink">Quests</span>
-          </h2>
+          <h2 className="text-2xl font-bold mb-6">Other clients</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {related.map((g) => (
+            {related.map((c) => (
               <Link
-                key={g.slug}
+                key={c.slug}
                 to="/play/$slug"
-                params={{ slug: g.slug }}
-                className="group pixel-border bg-card overflow-hidden shadow-[6px_6px_0_0_var(--color-foreground)] hover:-translate-x-1 hover:-translate-y-1 transition-transform"
+                params={{ slug: c.slug }}
+                className="soft-card p-5 hover:-translate-y-1 transition-transform"
               >
-                <img
-                  src={g.image}
-                  alt={g.title}
-                  loading="lazy"
-                  className="w-full aspect-video object-cover border-b-4 border-foreground"
-                />
-                <div className="p-4">
-                  <h3 className="font-pixel text-xs uppercase">{g.title}</h3>
-                </div>
+                <div className="size-10 rounded-lg bg-gradient-to-br from-sky-deep to-primary flex items-center justify-center text-primary-foreground font-bold mb-3">◆</div>
+                <h3 className="font-bold">{c.title} {c.version}</h3>
+                <p className="text-xs text-muted-foreground mt-1">{c.tagline}</p>
               </Link>
             ))}
           </div>
