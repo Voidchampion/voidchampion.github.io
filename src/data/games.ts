@@ -1,87 +1,70 @@
-import eaglercraftImg from "@/assets/game-eaglercraft.jpg";
-import motox3mImg from "@/assets/game-motox3m.jpg";
-import paperioImg from "@/assets/game-paperio.jpg";
-
-export type Game = {
+export type Client = {
   slug: string;
   title: string;
-  category: string;
+  version: string;
+  category: "Vanilla" | "PvP" | "Classic" | "Modded";
   tagline: string;
   description: string;
-  image: string;
-  accent: "pink" | "cyan" | "yellow" | "green";
-  players: string;
-  rating: string;
-  embedUrl?: string;
+  badge?: string;
 };
 
-export const games: Game[] = [
+export const clients: Client[] = [
   {
-    slug: "eaglercraft-1-5",
-    title: "Eaglercraft 1.5",
-    category: "Sandbox",
-    tagline: "Classic block-building survival",
-    description: "The OG voxel sandbox. Mine, craft, and build to your heart's content — straight in the browser.",
-    image: eaglercraftImg,
-    accent: "green",
-    players: "8.2K",
-    rating: "9.7",
+    slug: "eaglercraft-1-5-2",
+    title: "Eaglercraft",
+    version: "1.5.2",
+    category: "Classic",
+    tagline: "The OG nostalgia build",
+    description: "The original Eaglercraft. Lightweight, fast, and packed with old-school charm. Best for low-end devices.",
+    badge: "Classic",
   },
   {
-    slug: "eaglercraft-1-8",
-    title: "Eaglercraft 1.8",
-    category: "Sandbox",
-    tagline: "PvP-ready combat update",
-    description: "The favorite for PvP arenas and minigame servers. Improved combat and bigger worlds.",
-    image: eaglercraftImg,
-    accent: "cyan",
-    players: "12.4K",
-    rating: "9.8",
+    slug: "eaglercraft-1-8-8",
+    title: "EaglercraftX",
+    version: "1.8.8",
+    category: "PvP",
+    tagline: "The PvP favorite",
+    description: "The most popular version. Refined combat, bigger worlds, and the home of competitive servers.",
+    badge: "Most Popular",
   },
   {
-    slug: "eaglercraft-1-12",
-    title: "Eaglercraft 1.12",
-    category: "Sandbox",
+    slug: "eaglercraft-1-12-2",
+    title: "Eaglercraft",
+    version: "1.12.2",
+    category: "Vanilla",
     tagline: "Modern blocks & mobs",
-    description: "Newer blocks, smarter mobs, and refined survival. The freshest Eagler version on the playground.",
-    image: eaglercraftImg,
-    accent: "pink",
-    players: "6.1K",
-    rating: "9.6",
+    description: "Newer blocks, smarter mobs, and refined survival mechanics. The freshest stable build.",
+    badge: "Stable",
   },
   {
-    slug: "motox3m",
-    title: "Moto X3M",
-    category: "Racing",
-    tagline: "Stunt bike madness",
-    description: "Crash, flip, and rocket through brutal obstacle courses on your dirt bike. One-wheeled chaos.",
-    image: motox3mImg,
-    accent: "yellow",
-    players: "4.8K",
-    rating: "9.4",
+    slug: "resent-1-8-8",
+    title: "Resent Client",
+    version: "1.8.8",
+    category: "PvP",
+    tagline: "PvP client with QoL mods",
+    description: "Hypixel-ready PvP client with FPS mods, keystrokes, CPS counter and more.",
   },
   {
-    slug: "paper-io-2",
-    title: "Paper.io 2",
-    category: "IO Arena",
-    tagline: "Conquer the territory",
-    description: "Capture as much area as possible without getting your tail clipped. Pure addictive grid warfare.",
-    image: paperioImg,
-    accent: "pink",
-    players: "15.7K",
-    rating: "9.5",
+    slug: "shadow-1-8-8",
+    title: "Shadow Client",
+    version: "1.8.8",
+    category: "PvP",
+    tagline: "Performance-tuned PvP",
+    description: "Optimized rendering and animations for smooth competitive play.",
   },
   {
-    slug: "paper-io-3",
-    title: "Paper.io 3",
-    category: "IO Arena",
-    tagline: "3D grid domination",
-    description: "The sequel goes 3D. Same loop, more depth — claim cubes and crush rivals in voxel space.",
-    image: paperioImg,
-    accent: "cyan",
-    players: "9.3K",
-    rating: "9.3",
+    slug: "eaglercraft-beta-1-3",
+    title: "Eaglercraft",
+    version: "Beta 1.3",
+    category: "Classic",
+    tagline: "Pure beta nostalgia",
+    description: "The classic beta experience — original terrain generation and vibes.",
   },
 ];
 
-export const getGame = (slug: string) => games.find((g) => g.slug === slug);
+export const getClient = (slug: string) => clients.find((c) => c.slug === slug);
+
+// legacy aliases (kept so older imports don't break the build)
+export type Game = Client;
+export const games = clients;
+export const getGame = getClient;
