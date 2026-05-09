@@ -75,17 +75,27 @@ function PlayPage() {
 
         {/* Game frame */}
         <div className="soft-card overflow-hidden">
-          <div className="aspect-video bg-gradient-to-br from-sky-soft to-accent flex items-center justify-center starfield relative">
-            <div className="text-center space-y-4 max-w-md px-6">
-              <div className="size-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Loader2 className="size-7 text-primary animate-spin" />
+          {game.embedUrl ? (
+            <iframe
+              src={game.embedUrl}
+              title={`${game.title} ${game.version}`}
+              className="w-full aspect-video bg-black"
+              allow="fullscreen; gamepad; pointer-lock; autoplay; clipboard-read; clipboard-write"
+              allowFullScreen
+            />
+          ) : (
+            <div className="aspect-video bg-gradient-to-br from-sky-soft to-accent flex items-center justify-center starfield relative">
+              <div className="text-center space-y-4 max-w-md px-6">
+                <div className="size-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <Loader2 className="size-7 text-primary animate-spin" />
+                </div>
+                <h2 className="text-2xl font-bold">Booting {game.title} {game.version}</h2>
+                <p className="text-sm text-muted-foreground">
+                  Game embed pending. Drop in your iframe URL or game files to launch.
+                </p>
               </div>
-              <h2 className="text-2xl font-bold">Booting {game.title} {game.version}</h2>
-              <p className="text-sm text-muted-foreground">
-                Game embed pending. Drop in your iframe URL or game files to launch.
-              </p>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mt-10">
