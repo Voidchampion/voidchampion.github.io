@@ -1,9 +1,10 @@
 import { useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import grassBlock from "@/assets/grass-block.png";
 
 /**
  * mcpvp-style page transition: a panel sweeps across the screen with a
- * spinning isometric grass block in the middle.
+ * spinning grass block in the middle.
  */
 export function RouteTransition() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -32,19 +33,8 @@ export function RouteTransition() {
       <div className="route-transition__panel route-transition__panel--top" />
       <div className="route-transition__panel route-transition__panel--bottom" />
       <div className="route-transition__block">
-        <GrassBlock />
+        <img src={grassBlock} alt="" className="route-transition__img" />
       </div>
-    </div>
-  );
-}
-
-function GrassBlock() {
-  // Isometric pixel-styled grass block built from three CSS faces.
-  return (
-    <div className="grass-block">
-      <div className="grass-block__face grass-block__face--top" />
-      <div className="grass-block__face grass-block__face--left" />
-      <div className="grass-block__face grass-block__face--right" />
     </div>
   );
 }
