@@ -114,3 +114,50 @@ function PlayPage() {
     </div>
   );
 }
+
+function GameFrame({ game }: { game: ReturnType<typeof getClient> & {} }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  const goFullscreen = () => {
+    const el = wrapRef.current;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      el.requestFullscreen?.().catch(() => {});
+    }
+  };
+
+  return (
+    <div ref={wrapRef} className="soft-card overflow-hidden relative group eagler-cursor bg-black">
+      {game.embedUrl ? (
+        <iframe
+          src={game.embedUrl}
+          title={`${game.title} ${game.version}`}
+          className="w-full aspect-video bg-black block"
+          allow="fullscreen; gamepad; pointer-lock; autoplay; clipboard-read; clipboard-write"
+          allowFullScreen
+        />
+      ) : (
+        <div className="aspect-video bg-gradient-to-br from-sky-soft to-accent flex items-center justify-center starfield relative">
+          <div className="text-center space-y-4 max-w-md px-6">
+            <div className="size-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Loader2 className="size-7 text-primary animate-spin" />
+            </div>
+            <h2 className="text-2xl font-bold">Booting {game.title} {game.version}</h2>
+            <p className="text-sm text-muted-foreground">
+              Game embed pending. Drop in your iframe URL or game files to launch.
+            </p>
+          </div>
+        </div>
+      )}
+      <button
+        onClick={goFullscreen}
+        title="Fullscreen"
+        className="absolute top-3 right-3 z-10 size-10 rounded-xl bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-black/80 transition opacity-0 group-hover:opacity-100 focus:opacity-100"
+      >
+        <Maximize2 className="size-5" />
+      </button>
+    </div>
+  );
+}
