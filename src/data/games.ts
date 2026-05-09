@@ -6,6 +6,7 @@ export type Client = {
   tagline: string;
   description: string;
   badge?: string;
+  embedUrl?: string;
 };
 
 export const clients: Client[] = [
@@ -35,6 +36,7 @@ export const clients: Client[] = [
     tagline: "Modern blocks & mobs",
     description: "Newer blocks, smarter mobs, and refined survival mechanics. The freshest stable build.",
     badge: "Stable",
+    embedUrl: "/games/eaglercraft-1-12-2.html",
   },
   {
     slug: "resent-1-8-8",
