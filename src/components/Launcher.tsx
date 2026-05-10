@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { Rocket, ChevronDown } from "lucide-react";
 import { clients } from "@/data/games";
+import { playTransitionTo } from "@/components/RouteTransition";
 
 export function Launcher() {
   const [selected, setSelected] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
 
   const current = clients.find((c) => c.slug === selected);
 
   const handleLaunch = () => {
     if (!selected) return;
-    navigate({ to: "/play/$slug", params: { slug: selected } });
+    playTransitionTo(`/play/${selected}`);
   };
 
   return (
