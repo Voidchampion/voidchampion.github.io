@@ -31,6 +31,11 @@ export function RouteTransition() {
   }, [phase]);
 
   useEffect(() => {
+    const img = new Image();
+    img.src = grassBlock;
+  }, []);
+
+  useEffect(() => {
     const startTransition = (dest: string) => {
       if (phaseRef.current !== "idle") return;
       const url = (() => {
