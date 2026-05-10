@@ -110,8 +110,6 @@ export function RouteTransition() {
       <div className="route-transition__block">
         <img src={grassBlock} alt="" className="route-transition__img" draggable={false} />
       </div>
-      {/* keep the asset warm so first transition isn't a blank flash */}
-      <link rel="preload" as="image" href={grassBlock} />
     </div>
   );
 }
