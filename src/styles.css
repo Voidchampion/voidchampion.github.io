@@ -183,33 +183,53 @@
   transform: translateX(-60vw) rotate(-180deg) scale(0.6);
 }
 
-.route-transition.is-playing .route-transition__panel--top {
-  animation: rt-sweep-top 1.1s cubic-bezier(.7,.05,.3,1) forwards;
+/* Cover phase — panels slide in to fully hide the screen */
+.route-transition.rt-cover .route-transition__panel--top {
+  animation: rt-cover-top 500ms cubic-bezier(.7,.05,.3,1) forwards;
 }
-.route-transition.is-playing .route-transition__panel--bottom {
-  animation: rt-sweep-bottom 1.1s cubic-bezier(.7,.05,.3,1) forwards;
+.route-transition.rt-cover .route-transition__panel--bottom {
+  animation: rt-cover-bottom 500ms cubic-bezier(.7,.05,.3,1) forwards;
 }
-.route-transition.is-playing .route-transition__block {
-  animation: rt-block 1.1s cubic-bezier(.4,.1,.3,1) forwards;
+.route-transition.rt-cover .route-transition__block {
+  animation: rt-block-in 500ms cubic-bezier(.4,.1,.3,1) forwards;
 }
 
-@keyframes rt-sweep-top {
+/* Uncover phase — panels slide back out, revealing the new page */
+.route-transition.rt-uncover .route-transition__panel--top {
+  transform: translateY(0%);
+  animation: rt-uncover-top 500ms cubic-bezier(.7,.05,.3,1) forwards;
+}
+.route-transition.rt-uncover .route-transition__panel--bottom {
+  transform: translateY(0%);
+  animation: rt-uncover-bottom 500ms cubic-bezier(.7,.05,.3,1) forwards;
+}
+.route-transition.rt-uncover .route-transition__block {
+  animation: rt-block-out 500ms cubic-bezier(.4,.1,.3,1) forwards;
+}
+
+@keyframes rt-cover-top {
   0%   { transform: translateY(-110%); }
-  40%  { transform: translateY(0%); }
-  60%  { transform: translateY(0%); }
+  100% { transform: translateY(0%); }
+}
+@keyframes rt-cover-bottom {
+  0%   { transform: translateY(110%); }
+  100% { transform: translateY(0%); }
+}
+@keyframes rt-uncover-top {
+  0%   { transform: translateY(0%); }
   100% { transform: translateY(-110%); }
 }
-@keyframes rt-sweep-bottom {
-  0%   { transform: translateY(110%); }
-  40%  { transform: translateY(0%); }
-  60%  { transform: translateY(0%); }
+@keyframes rt-uncover-bottom {
+  0%   { transform: translateY(0%); }
   100% { transform: translateY(110%); }
 }
-@keyframes rt-block {
+@keyframes rt-block-in {
   0%   { opacity: 0; transform: translateX(-70vw) rotate(-360deg) scale(0.5); }
-  40%  { opacity: 1; transform: translateX(0)     rotate(0deg)    scale(1); }
-  60%  { opacity: 1; transform: translateX(0)     rotate(45deg)   scale(1); }
-  100% { opacity: 0; transform: translateX(70vw)  rotate(360deg)  scale(0.5); }
+  100% { opacity: 1; transform: translateX(0)     rotate(0deg)    scale(1); }
+}
+@keyframes rt-block-out {
+  0%   { opacity: 1; transform: translateX(0)    rotate(0deg)   scale(1); }
+  100% { opacity: 0; transform: translateX(70vw) rotate(360deg) scale(0.5); }
 }
 
 /* Isometric grass block (CSS-only, pixel-art shading) */
