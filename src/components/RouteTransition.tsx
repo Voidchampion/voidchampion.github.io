@@ -15,16 +15,17 @@ export function playTransitionTo(href: string) {
 }
 
 /**
- * mcpvp-style page transition. Cover phase fully hides the screen BEFORE
- * navigation, then uncovers. Works for <a> link clicks and programmatic
- * navigations via playTransitionTo().
+ * mcpvp-style page transition. Subscribes to the router so EVERY navigation
+ * (link click, programmatic navigate, back/forward) gets covered by the
+ * overlay before the new screen is revealed.
  */
 export function RouteTransition() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
   const phaseRef = useRef<Phase>("idle");
-  const coverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const coverStart = useRef<number>(0);
   const uncoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const minCoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -36,75 +37,67 @@ export function RouteTransition() {
   }, []);
 
   useEffect(() => {
-    const startTransition = (dest: string) => {
+    const startCover = () => {
       if (phaseRef.current !== "idle") return;
-      const url = (() => {
-        try {
-          return new URL(dest, window.location.href);
-        } catch {
-          return null;
-        }
-      })();
-      if (!url) return;
-      const target = url.pathname + url.search + url.hash;
-      const current = window.location.pathname + window.location.search + window.location.hash;
-      if (target === current) return;
-
+      coverStart.current = performance.now();
       phaseRef.current = "cover";
       setPhase("cover");
-
-      if (coverTimer.current) clearTimeout(coverTimer.current);
-      coverTimer.current = setTimeout(() => {
-        router.navigate({ to: target });
-        requestAnimationFrame(() => {
-          window.scrollTo(0, 0);
-          phaseRef.current = "uncover";
-          setPhase("uncover");
-          if (uncoverTimer.current) clearTimeout(uncoverTimer.current);
-          uncoverTimer.current = setTimeout(() => {
-            phaseRef.current = "idle";
-            setPhase("idle");
-          }, UNCOVER_MS);
-        });
-      }, COVER_MS);
     };
 
-    const onClick = (e: MouseEvent) => {
-      if (phaseRef.current !== "idle") return;
-      if (e.defaultPrevented) return;
-      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-
-      const anchor = (e.target as HTMLElement | null)?.closest?.("a");
-      if (!anchor) return;
-      const href = anchor.getAttribute("href");
-      if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
-      const tgt = anchor.getAttribute("target");
-      if (tgt && tgt !== "" && tgt !== "_self") return;
-
-      let url: URL;
-      try {
-        url = new URL(href, window.location.href);
-      } catch {
-        return;
-      }
-      if (url.origin !== window.location.origin) return;
-
-      e.preventDefault();
-      startTransition(url.href);
+    const startUncover = () => {
+      const elapsed = performance.now() - coverStart.current;
+      const wait = Math.max(0, COVER_MS - elapsed);
+      if (minCoverTimer.current) clearTimeout(minCoverTimer.current);
+      minCoverTimer.current = setTimeout(() => {
+        window.scrollTo(0, 0);
+        phaseRef.current = "uncover";
+        setPhase("uncover");
+        if (uncoverTimer.current) clearTimeout(uncoverTimer.current);
+        uncoverTimer.current = setTimeout(() => {
+          phaseRef.current = "idle";
+          setPhase("idle");
+        }, UNCOVER_MS);
+      }, wait);
     };
 
+    // Router events fire for every navigation, including back/forward and
+    // programmatic <Link>/navigate() calls.
+    const unsubBefore = router.subscribe("onBeforeNavigate", (e) => {
+      const from = e.fromLocation?.pathname ?? "";
+      const to = e.toLocation?.pathname ?? "";
+      if (from === to) return;
+      startCover();
+    });
+    const unsubResolved = router.subscribe("onResolved", () => {
+      if (phaseRef.current !== "cover") return;
+      startUncover();
+    });
+
+    // Custom event still supported for explicit triggers that want to
+    // navigate via the same animation.
     const onCustom = (e: Event) => {
       const detail = (e as CustomEvent<{ href: string }>).detail;
-      if (detail?.href) startTransition(detail.href);
+      if (!detail?.href) return;
+      try {
+        const url = new URL(detail.href, window.location.href);
+        const target = url.pathname + url.search + url.hash;
+        const current = window.location.pathname + window.location.search + window.location.hash;
+        if (target === current) return;
+        // Navigate — the router subscription above will drive the animation.
+        router.navigate({ to: target });
+      } catch {
+        /* ignore */
+      }
     };
 
-    document.addEventListener("click", onClick);
     window.addEventListener(TRANSITION_EVENT, onCustom as EventListener);
+
     return () => {
-      document.removeEventListener("click", onClick);
+      unsubBefore();
+      unsubResolved();
       window.removeEventListener(TRANSITION_EVENT, onCustom as EventListener);
-      if (coverTimer.current) clearTimeout(coverTimer.current);
       if (uncoverTimer.current) clearTimeout(uncoverTimer.current);
+      if (minCoverTimer.current) clearTimeout(minCoverTimer.current);
     };
   }, [router]);
 
