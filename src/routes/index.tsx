@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Rocket, Globe, Wrench, Check, X, AlertTriangle, Users } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Launcher } from "@/components/Launcher";
@@ -83,9 +83,33 @@ function HomePage() {
             </div>
             <p className="text-sm text-muted-foreground">Clean, ad-free Eaglercraft launcher.</p>
           </div>
-          <FooterCol title="Launcher" links={["All Clients", "Vanilla", "PvP", "Classic"]} />
-          <FooterCol title="Resources" links={["Server List", "Discord", "Help", "FAQ"]} />
-          <FooterCol title="Legal" links={["Disclaimer", "Privacy", "Terms", "DMCA"]} />
+          <FooterCol
+            title="Launcher"
+            links={[
+              { label: "All Clients", to: "/games" },
+              { label: "Downloads", to: "/downloads" },
+              { label: "Launcher", to: "/" },
+              { label: "Games", to: "/games" },
+            ]}
+          />
+          <FooterCol
+            title="Resources"
+            links={[
+              { label: "Server List", to: "/resources", hash: "servers-list" },
+              { label: "Guides", to: "/resources", hash: "guides" },
+              { label: "FAQ", to: "/resources", hash: "faq" },
+              { label: "Discord", href: "https://discord.gg/", external: true },
+            ]}
+          />
+          <FooterCol
+            title="Legal"
+            links={[
+              { label: "Disclaimer", to: "/legal", hash: "disclaimer" },
+              { label: "Privacy", to: "/legal", hash: "privacy" },
+              { label: "Terms", to: "/legal", hash: "terms" },
+              { label: "DMCA", to: "/legal", hash: "dmca" },
+            ]}
+          />
         </div>
         <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
           © 2026 eaglerlaunch · Not affiliated with Mojang or Microsoft.
@@ -124,13 +148,32 @@ function Problem({ icon, title, body, tone }: { icon: React.ReactNode; title: st
   );
 }
 
-function FooterCol({ title, links }: { title: string; links: string[] }) {
+type FooterLink =
+  | { label: string; to: "/" | "/games" | "/downloads" | "/resources" | "/legal"; hash?: string }
+  | { label: string; href: string; external?: boolean };
+
+function FooterCol({ title, links }: { title: string; links: FooterLink[] }) {
   return (
     <div>
       <h4 className="font-semibold text-sm mb-3">{title}</h4>
       <ul className="space-y-2 text-sm text-muted-foreground">
         {links.map((l) => (
-          <li key={l}><a href="#" className="hover:text-foreground transition-colors">{l}</a></li>
+          <li key={l.label}>
+            {"to" in l ? (
+              <Link to={l.to} hash={l.hash} className="hover:text-foreground transition-colors">
+                {l.label}
+              </Link>
+            ) : (
+              <a
+                href={l.href}
+                target={l.external ? "_blank" : undefined}
+                rel={l.external ? "noreferrer" : undefined}
+                className="hover:text-foreground transition-colors"
+              >
+                {l.label}
+              </a>
+            )}
+          </li>
         ))}
       </ul>
     </div>
