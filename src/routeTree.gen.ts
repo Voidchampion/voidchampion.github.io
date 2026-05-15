@@ -9,13 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as GamesRouteImport } from './routes/games'
+import { Route as DownloadsRouteImport } from './routes/downloads'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlaySlugRouteImport } from './routes/play.$slug'
 
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesRoute = GamesRouteImport.update({
   id: '/games',
   path: '/games',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadsRoute = DownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,41 +49,87 @@ const PlaySlugRoute = PlaySlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/downloads': typeof DownloadsRoute
   '/games': typeof GamesRoute
+  '/legal': typeof LegalRoute
+  '/resources': typeof ResourcesRoute
   '/play/$slug': typeof PlaySlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/downloads': typeof DownloadsRoute
   '/games': typeof GamesRoute
+  '/legal': typeof LegalRoute
+  '/resources': typeof ResourcesRoute
   '/play/$slug': typeof PlaySlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/downloads': typeof DownloadsRoute
   '/games': typeof GamesRoute
+  '/legal': typeof LegalRoute
+  '/resources': typeof ResourcesRoute
   '/play/$slug': typeof PlaySlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/games' | '/play/$slug'
+  fullPaths:
+    | '/'
+    | '/downloads'
+    | '/games'
+    | '/legal'
+    | '/resources'
+    | '/play/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/games' | '/play/$slug'
-  id: '__root__' | '/' | '/games' | '/play/$slug'
+  to: '/' | '/downloads' | '/games' | '/legal' | '/resources' | '/play/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/downloads'
+    | '/games'
+    | '/legal'
+    | '/resources'
+    | '/play/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DownloadsRoute: typeof DownloadsRoute
   GamesRoute: typeof GamesRoute
+  LegalRoute: typeof LegalRoute
+  ResourcesRoute: typeof ResourcesRoute
   PlaySlugRoute: typeof PlaySlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games': {
       id: '/games'
       path: '/games'
       fullPath: '/games'
       preLoaderRoute: typeof GamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/downloads': {
+      id: '/downloads'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof DownloadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,7 +151,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DownloadsRoute: DownloadsRoute,
   GamesRoute: GamesRoute,
+  LegalRoute: LegalRoute,
+  ResourcesRoute: ResourcesRoute,
   PlaySlugRoute: PlaySlugRoute,
 }
 export const routeTree = rootRouteImport
